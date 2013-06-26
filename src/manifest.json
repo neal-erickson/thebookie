@@ -1,15 +1,20 @@
 {
   "manifest_version": 2,
 
-  "name": "One-click Kittens",
-  "description": "This extension demonstrates a browser action with kittens.",
-  "version": "1.0",
+  "name": "Bookmarkhoor",
+  "description": "Epic-ly awesome bookmark navigation",
+  "version": "0.1",
 
   "permissions": [
-    "https://secure.flickr.com/"
+    "tabs"
   ],
+
   "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html"
+    "default_icon": "icon.png"
+  },
+
+  "background": {
+    "scripts": ["event.js"],
+    "persistent": false
   }
 }
