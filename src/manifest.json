@@ -1,12 +1,13 @@
 {
   "manifest_version": 2,
 
-  "name": "Bookmarkhoor",
+  "name": "Bookmarkhor",
   "description": "Epic-ly awesome bookmark navigation",
   "version": "0.1",
 
   "permissions": [
-    "tabs"
+    "tabs",
+    "bookmarks"
   ],
 
   "browser_action": {
