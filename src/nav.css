@@ -1,0 +1,17 @@
+ul.node-container {
+    padding: 0px;
+    clear:both;
+}
+
+.node-container li {
+    width:100px;
+    float:left;
+    border:solid 1px black;
+    margin:10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.node-container li:hover {
+    border-color: red;
+}

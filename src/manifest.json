@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "Bookmarkhor",
+  "name": "The Bookie",
   "description": "Epic-ly awesome bookmark navigation",
   "version": "0.1",
 
@@ -13,6 +13,8 @@
   "browser_action": {
     "default_icon": "icon.png"
   },
+  
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 
   "background": {
     "scripts": ["event.js"],

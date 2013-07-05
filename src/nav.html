@@ -1,16 +1,32 @@
 <html>
     <head>
+        <title>thebookie</title>
+        <link rel="stylesheet" type="text/css" href="nav.css">
     </head>
-    <body>
-        <h1>Bookmarkhor v0.1</h1>
-        
+    <body data-bind='event: { keyup: hotkey }'>
+        <h1>thebookie v0.1</h1>
         <hr />
+        <button data-bind='click: reset'>Reset</button>
 
-        <div id="root">
-            <span data-bind="text: rootNodeJSON"></span>
+        <div id="root" class="base">
+            <!-- <span data-bind="text: rootNodeJSON"></span> -->
         </div>
 
+
+        <div id="test">
+            <ul class="node-container" data-bind="foreach: activeNodes">
+                <li class="bookmark-node" 
+                    data-bind='click: $parent.selectNode'>
+                    <!-- <p data-bind='text: id' /> -->
+                    <p data-bind='text: assignedHotkey' />
+                    <p data-bind='text: title' />
+                </li>
+            </ul>
+        </div>
+
+        <!-- External script dependencies -->
         <script src='knockout-2.2.1.js' type='text/javascript'></script>
+        <script src='jquery-1.10.1.min.js' type='text/javascript'></script>
         <script src='nav.js' type='text/javascript'></script>
     </body>
 </html>
