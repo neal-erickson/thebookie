@@ -34,16 +34,38 @@ vm.reset = function(){
     vm.setActiveNodes(vm.tree());
 };
 
-vm.hotkey = function(data, event){
-    console.log(event);
+// $('body').keyup(function(event){
+//     console.log(event);
+// });
 
-    var index = parseInt(event.keyCode) - 48;
-    var match = ko.utils.arrayFirst(vm.activeNodes(), function(node){
-        return node.assignedHotkey === index;
-    });
-    if(match != null){
-        vm.selectNode(match);
+function handleHotkey(keyCode, keyValue){
+    // Number key checks
+    if(!isNaN(keyValue)){
+        var match = ko.utils.arrayFirst(vm.activeNodes(), function(node){
+            return node.assignedHotkey === keyValue;
+        });
+
+        if(match != null){
+            vm.selectNode(match);
+        }
+        return;
     }
+
+    // Other keys
+    switch(keyCode){
+        case 32:
+            alert('!');
+            break;
+        case 192: case 27:
+            alert('go up');
+            break;
+    }
+}
+
+vm.hotkey = function(data, event){
+    var keyValue = parseInt(String.fromCharCode(event.keyCode));
+    console.log('keycode', event.keyCode, keyValue);
+    handleHotkey(event.keyCode, keyValue);
 };
 
 // Load the data from chrome
