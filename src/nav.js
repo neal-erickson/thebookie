@@ -12,12 +12,15 @@ vm.tree = ko.observable(null);
 
 vm.activeNodes = ko.observableArray([]).extend({ logChange: 'nodes' });
 
+// Current hotkey plan is 12 keys
+var alphaHotkeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
+
 // Note
 vm.setActiveNodes = function(node){
-    var testIndex = 1;
+    var index = 0;
     ko.utils.arrayForEach(node.children, function(childNode){
-        childNode.assignedHotkey = testIndex;
-        testIndex++;
+        childNode.assignedHotkey = alphaHotkeys[index];
+        index++;
     })
     vm.activeNodes(node.children);
 };
@@ -34,13 +37,29 @@ vm.reset = function(){
     vm.setActiveNodes(vm.tree());
 };
 
-// $('body').keyup(function(event){
-//     console.log(event);
-// });
+function goUpHierarchy(){
+    // TODO: Do this
+    // var firstNode = vm.activeNodes()[0];
+    // if(firstNode){
+    //     var secondNode = firstNode.parent
+    // }
+}
 
 function handleHotkey(keyCode, keyValue){
     // Number key checks
-    if(!isNaN(keyValue)){
+    // if(!isNaN(keyValue)){
+    //     var match = ko.utils.arrayFirst(vm.activeNodes(), function(node){
+    //         return node.assignedHotkey === keyValue;
+    //     });
+
+    //     if(match != null){
+    //         vm.selectNode(match);
+    //     }
+    //     return;
+    // }
+
+    // letter keys
+    if(keyCode >= 65 && keyCode <= 90){
         var match = ko.utils.arrayFirst(vm.activeNodes(), function(node){
             return node.assignedHotkey === keyValue;
         });
@@ -57,13 +76,13 @@ function handleHotkey(keyCode, keyValue){
             alert('!');
             break;
         case 192: case 27:
-            alert('go up');
+            goUpHierarchy();
             break;
     }
 }
 
 vm.hotkey = function(data, event){
-    var keyValue = parseInt(String.fromCharCode(event.keyCode));
+    var keyValue = String.fromCharCode(event.keyCode).toLowerCase();
     console.log('keycode', event.keyCode, keyValue);
     handleHotkey(event.keyCode, keyValue);
 };
@@ -73,6 +92,8 @@ chrome.bookmarks.getTree(function(tree){
     vm.tree(tree[0]);
     vm.setActiveNodes(tree[0]);
     console.log(tree[0]);
+
+    // TODO : I think I need to modify the tree some for later convenience (parent objects, etc)
 });
 
 // This is the non-jquery way to be ready for something
