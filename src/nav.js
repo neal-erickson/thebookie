@@ -13,7 +13,7 @@ vm.tree = ko.observable(null);
 vm.activeNodes = ko.observableArray([]).extend({ logChange: 'nodes' });
 
 // Current hotkey plan is 12 keys
-var alphaHotkeys = ['q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
+var alphaHotkeys = ['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V'];
 
 // Note
 vm.setActiveNodes = function(node){
@@ -27,7 +27,11 @@ vm.setActiveNodes = function(node){
 
 vm.selectNode = function(node){
     if(node.url){ // If this is a link, follow it
-        chrome.tabs.create({ url: node.url })
+        chrome.tabs.create({ url: node.url });
+        // Add this back in to make it close itself.
+        // chrome.tabs.getCurrent(function(tab) {
+        //     chrome.tabs.remove(tab.id);
+        // });
     } else { // folder
         vm.setActiveNodes(node);
     }
@@ -82,7 +86,7 @@ function handleHotkey(keyCode, keyValue){
 }
 
 vm.hotkey = function(data, event){
-    var keyValue = String.fromCharCode(event.keyCode).toLowerCase();
+    var keyValue = String.fromCharCode(event.keyCode).toUpperCase();
     console.log('keycode', event.keyCode, keyValue);
     handleHotkey(event.keyCode, keyValue);
 };

@@ -1,27 +1,20 @@
-/*ul.node-container {
-    padding: 0px;
-    clear:both;
+div.node-container {
+	width: 1070px;
 }
-
-.node-container li {
-    width:100px;
-    float:left;
-    border:solid 1px black;
-    margin:10px;
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.node-container li:hover {
-    border-color: red;
-}*/
 
 .bookmark-node {
-	border: 1px solid black;
+	border: 3px solid black;
 	margin-bottom: 20px;
+	height: 150px;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+.bookmark-node.folderNode {
+	background-color: #33FF99;
 }
 
 .bookmark-node:hover {
-	background-color: green;
+	background-color: red;
 	cursor: pointer;
 }

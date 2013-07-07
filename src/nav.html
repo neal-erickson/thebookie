@@ -8,16 +8,10 @@
         <h1>thebookie v0.1</h1>
         <hr />
         <button data-bind='click: reset'>Reset</button>
-
-        <div id="root" class="base">
-            <!-- <span data-bind="text: rootNodeJSON"></span> -->
-        </div>
-
-
-        <div id="test" class="node-container row" style="width: 980px;" data-bind="foreach: activeNodes">
+        <div id="test" class="container node-container row" data-bind="foreach: activeNodes">
             <div class="bookmark-node span3" 
-                data-bind='click: $parent.selectNode'>
-                <p data-bind='text: assignedHotkey' />
+                data-bind='click: $parent.selectNode, css: { folderNode : !$data.hasOwnProperty("url") }'>
+                <span class='label label-inverse' data-bind='text: assignedHotkey'></span>
                 <p data-bind='text: title' />
             </div>
         </div>
