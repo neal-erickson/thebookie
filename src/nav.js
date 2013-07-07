@@ -41,6 +41,17 @@ vm.reset = function(){
     vm.setActiveNodes(vm.tree());
 };
 
+vm.breadcrumbs = ko.computed(function(){
+    //return {};
+    var crumbs = [{
+        clickFunction: vm.reset,
+        name: 'Root'
+    }];
+    return crumbs;
+});
+
+
+
 function goUpHierarchy(){
     // TODO: Do this
     // var firstNode = vm.activeNodes()[0];
