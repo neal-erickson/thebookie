@@ -12,11 +12,15 @@ vm.tree = ko.observable(null);
 
 vm.activeNodes = ko.observableArray([]).extend({ logChange: 'nodes' });
 
-// Current hotkey plan is 12 keys
+// Current hotkey plan is 12 keys, 3 rows of 4
 var alphaHotkeys = ['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V'];
 
 // Note
 vm.setActiveNodes = function(node){
+    for(var i=0; i<12; i++){
+        // todo
+
+    }
     var index = 0;
     ko.utils.arrayForEach(node.children, function(childNode){
         childNode.assignedHotkey = alphaHotkeys[index];
@@ -41,16 +45,21 @@ vm.reset = function(){
     vm.setActiveNodes(vm.tree());
 };
 
+vm.levels = ko.observableArray();
+
 vm.breadcrumbs = ko.computed(function(){
-    //return {};
     var crumbs = [{
         clickFunction: vm.reset,
         name: 'Root'
     }];
+    ko.utils.arrayForEach(vm.levels(), function(item){
+        crumbs.push({ 
+            clickFunction: alert('!'),
+            name: item.title  
+        });
+    });
     return crumbs;
 });
-
-
 
 function goUpHierarchy(){
     // TODO: Do this
@@ -102,13 +111,11 @@ vm.hotkey = function(data, event){
     handleHotkey(event.keyCode, keyValue);
 };
 
-// Load the data from chrome
+// Load the data from chrome.bookmarks
 chrome.bookmarks.getTree(function(tree){
-    vm.tree(tree[0]);
-    vm.setActiveNodes(tree[0]);
-    console.log(tree[0]);
-
-    // TODO : I think I need to modify the tree some for later convenience (parent objects, etc)
+    var rootNode = tree[0].children[0]; // this is the 'bookmarks bar'
+    vm.tree(rootNode);
+    vm.setActiveNodes(rootNode);
 });
 
 // This is the non-jquery way to be ready for something

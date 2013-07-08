@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <title>thebookie</title>
@@ -6,14 +7,22 @@
     </head>
     <body data-bind='event: { keyup: hotkey }'>
         <div class='container node-container row'>
-            <h2>thebookie v0.1</h2>
+            <h2 class="title">thebookie v0.1</h2>
+            <button class="btn btn-large btn-info arrow-button" style="left: -100px;" disabled>
+                <i class="icon-arrow-left icon-white"></i>
+                Prev
+            </button>
+            <button class="btn btn-large btn-info arrow-button" style="left: 1085px;" disabled>
+                Next
+                <i class="icon-arrow-right icon-white"></i>
+            </button> 
             <ul class="breadcrumb" data-bind="foreach: breadcrumbs">
                 <li>
                     <a href="#" data-bind='text: name, click: clickFunction'></a>
                     <span class="divider">/</span>
                 </li>
             </ul>
-            <div data-bind="foreach: activeNodes">
+            <div class="node-parent" data-bind="foreach: activeNodes">
                 <div class="bookmark-node span3" 
                     data-bind='click: $parent.selectNode, css: { folderNode : !$data.hasOwnProperty("url") }'>
                     <span class='label label-inverse' data-bind='text: assignedHotkey'></span>

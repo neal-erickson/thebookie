@@ -1,5 +1,6 @@
 div.node-container {
-	width: 1070px;
+	width: 1064px;
+	position: relative;
 }
 
 .bookmark-node {
@@ -17,4 +18,18 @@ div.node-container {
 .bookmark-node:hover {
 	background-color: red;
 	cursor: pointer;
+}
+
+.arrow-button {
+	width: 100px;
+	position: absolute;
+	top: 325px;
+}
+
+ul.breadcrumb {
+	margin-left: 20px;
+}
+
+h2.title {
+	margin-left: 20px;
 }
