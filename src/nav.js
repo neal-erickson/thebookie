@@ -8,6 +8,8 @@ ko.extenders.logChange = function(target, option) {
 // Current hotkey plan is 12 keys, 3 rows of 4
 var alphaHotkeys = ['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V'];
 
+var pageSize = 12;
+
 // Initialize the KO view model
 var vm = { };
 vm.tree = ko.observable(null);
@@ -18,23 +20,40 @@ vm.childNodes = ko.computed(function(){
     if(!vm.selectedNode()) return [];
     return vm.selectedNode().children;
 });
+vm.activeNodeIndex = ko.observable(0);
+
+// this resets the page index as nodes are selected
+vm.selectedNode.subscribe(function(newValue){
+    vm.activeNodeIndex(0);
+});
 
 // This computed returns the nodes to be shown, with their hotkeys
 vm.activeNodes = ko.computed(function(){
+    var page = vm.activeNodeIndex();
     var nodes = vm.childNodes();
-    for(var index in nodes){
-        if(index > 11) break; // optimization
+    
+    var start = page * pageSize,
+        end = start + pageSize;
+
+    nodes = nodes.slice(start, end);
+
+    // assign hotkeys
+     for(var index in nodes){
         nodes[index].assignedHotkey = alphaHotkeys[index];
     }
-    return nodes.slice(0, 12);
+
+    return nodes;
 });
 
 vm.showPrev = ko.computed(function(){
     return false;
 });
 vm.showNext = ko.computed(function(){
-    return vm.childNodes().length > 12;
+    return vm.childNodes().length > pageSize;
 });
+vm.nextPage = function(){
+    vm.activeNodeIndex(vm.activeNodeIndex() + 1);
+};
 
 vm.nodeClicked = function(node){
     if(node.url){
@@ -79,7 +98,9 @@ vm.breadcrumbs = ko.computed(function(){
 });
 
 function goUpHierarchy(){
-    // TODO: Do this
+    if(vm.selectedNode().parentNode){
+        vm.selectedNode(vm.selectedNode().parentNode);
+    }
 }
 
 function handleHotkey(keyCode, keyValue){
@@ -97,10 +118,10 @@ function handleHotkey(keyCode, keyValue){
 
     // Other keys
     switch(keyCode){
-        case 32:
-            alert('!');
+        case 32: // spacebar
+            vm.nextPage();
             break;
-        case 192: case 27:
+        case 192: case 27: // esc and tilde
             goUpHierarchy();
             break;
     }
