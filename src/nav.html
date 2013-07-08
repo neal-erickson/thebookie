@@ -8,11 +8,13 @@
     <body data-bind='event: { keyup: hotkey }'>
         <div class='container node-container row'>
             <h2 class="title">thebookie v0.1</h2>
-            <button class="btn btn-large btn-info arrow-button" style="left: -100px;" disabled>
+            <button class="btn btn-large btn-info arrow-button" style="left: -100px;"
+                data-bind="visible: showPrev">
                 <i class="icon-arrow-left icon-white"></i>
                 Prev
             </button>
-            <button class="btn btn-large btn-info arrow-button" style="left: 1085px;" disabled>
+            <button class="btn btn-large btn-info arrow-button" style="left: 1085px;"
+                data-bind="visible: showNext">
                 Next
                 <i class="icon-arrow-right icon-white"></i>
             </button>

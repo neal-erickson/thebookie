@@ -14,15 +14,26 @@ vm.tree = ko.observable(null);
 vm.rootNode = ko.observable(null);
 vm.selectedNode = ko.observable();
 
-//vm.activeNodes = ko.observableArray([]).extend({ logChange: 'nodes' });
-vm.activeNodes = ko.computed(function(){
+vm.childNodes = ko.computed(function(){
     if(!vm.selectedNode()) return [];
+    return vm.selectedNode().children;
+});
 
-    var nodes = vm.selectedNode().children;
+// This computed returns the nodes to be shown, with their hotkeys
+vm.activeNodes = ko.computed(function(){
+    var nodes = vm.childNodes();
     for(var index in nodes){
+        if(index > 11) break; // optimization
         nodes[index].assignedHotkey = alphaHotkeys[index];
     }
-    return nodes;
+    return nodes.slice(0, 12);
+});
+
+vm.showPrev = ko.computed(function(){
+    return false;
+});
+vm.showNext = ko.computed(function(){
+    return vm.childNodes().length > 12;
 });
 
 vm.nodeClicked = function(node){
@@ -31,7 +42,6 @@ vm.nodeClicked = function(node){
         // Add this back in to make it close itself.
         // chrome.tabs.getCurrent(function(tab) {chrome.tabs.remove(tab.id); });
     } else { 
-        //vm.nodeHistory.push(node);
         vm.selectedNode(node);
     }
 };
