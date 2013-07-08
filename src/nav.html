@@ -15,16 +15,17 @@
             <button class="btn btn-large btn-info arrow-button" style="left: 1085px;" disabled>
                 Next
                 <i class="icon-arrow-right icon-white"></i>
-            </button> 
+            </button>
             <ul class="breadcrumb" data-bind="foreach: breadcrumbs">
                 <li>
-                    <a href="#" data-bind='text: name, click: clickFunction'></a>
+                    <span data-bind='visible: data == null, text: name'></span>
+                    <a href="#" data-bind='text: name, click: clickFunction, visible: data !== null'></a>
                     <span class="divider">/</span>
                 </li>
             </ul>
             <div class="node-parent" data-bind="foreach: activeNodes">
                 <div class="bookmark-node span3" 
-                    data-bind='click: $parent.selectNode, css: { folderNode : !$data.hasOwnProperty("url") }'>
+                    data-bind='click: $parent.nodeClicked, css: { folderNode : !$data.hasOwnProperty("url") }'>
                     <span class='label label-inverse' data-bind='text: assignedHotkey'></span>
                     <p data-bind='text: title' />
                 </div>
