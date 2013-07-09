@@ -20,20 +20,30 @@ vm.childNodes = ko.computed(function(){
     if(!vm.selectedNode()) return [];
     return vm.selectedNode().children;
 });
-vm.activeNodeIndex = ko.observable(0);
+vm.childNodesLength = ko.computed(function(){
+    return vm.childNodes().length;
+});
+vm.activeNodeIndex = ko.observable(0);//.extend({ logChange: 'activeNodeIndex'});
 
 // this resets the page index as nodes are selected
 vm.selectedNode.subscribe(function(newValue){
     vm.activeNodeIndex(0);
 });
 
+vm.startIndex = ko.computed(function(){
+    return vm.activeNodeIndex() * pageSize;
+});//.extend({ logChange: 'startIndex'});
+vm.endIndex = ko.computed(function(){
+    var index = vm.startIndex() + pageSize;
+    return index > vm.childNodesLength() ? vm.childNodesLength() : index;
+});//.extend({ logChange: 'endIndex'});
+
 // This computed returns the nodes to be shown, with their hotkeys
 vm.activeNodes = ko.computed(function(){
     var page = vm.activeNodeIndex();
     var nodes = vm.childNodes();
     
-    var start = page * pageSize,
-        end = start + pageSize;
+    var start = vm.startIndex(), end = vm.endIndex();
 
     nodes = nodes.slice(start, end);
 
@@ -53,13 +63,20 @@ vm.showNext = ko.computed(function(){
 });
 vm.nextPage = function(){
     vm.activeNodeIndex(vm.activeNodeIndex() + 1);
+
+    // If we're too far, loop back around
+    if(vm.activeNodeIndex() * pageSize > vm.childNodes().length){
+        vm.activeNodeIndex(0);
+    }
 };
 
-vm.nodeClicked = function(node){
+vm.nodeClicked = function(node, closeSelf){
     if(node.url){
-        chrome.tabs.create({ url: node.url });
+        chrome.tabs.create({ url: node.url, active: closeSelf });
         // Add this back in to make it close itself.
-        // chrome.tabs.getCurrent(function(tab) {chrome.tabs.remove(tab.id); });
+        if(closeSelf){
+            chrome.tabs.getCurrent(function(tab) {chrome.tabs.remove(tab.id); });
+        }
     } else { 
         vm.selectedNode(node);
     }
@@ -97,13 +114,17 @@ vm.breadcrumbs = ko.computed(function(){
     return crumbs.reverse();
 });
 
+vm.breadcrumbText = ko.computed(function(){
+    return '(' + (vm.startIndex() + 1) + ' to ' + vm.endIndex() + ' of ' + vm.childNodes().length + ' items)';
+});
+
 function goUpHierarchy(){
     if(vm.selectedNode().parentNode){
         vm.selectedNode(vm.selectedNode().parentNode);
     }
 }
 
-function handleHotkey(keyCode, keyValue){
+function handleHotkey(keyCode, keyValue, keyEvent){
     // alphabetic keys
     if(keyCode >= 65 && keyCode <= 90){
         var match = ko.utils.arrayFirst(vm.activeNodes(), function(node){
@@ -111,7 +132,7 @@ function handleHotkey(keyCode, keyValue){
         });
 
         if(match != null){
-            vm.nodeClicked(match);
+            vm.nodeClicked(match, !keyEvent.shiftKey);
         }
         return;
     }
@@ -130,7 +151,7 @@ function handleHotkey(keyCode, keyValue){
 vm.hotkey = function(data, event){
     var keyValue = String.fromCharCode(event.keyCode).toUpperCase();
     console.log('keycode', event.keyCode, keyValue);
-    handleHotkey(event.keyCode, keyValue);
+    handleHotkey(event.keyCode, keyValue, event);
 };
 
 function prepareBookmarkNodeRecursive(node, parent){
