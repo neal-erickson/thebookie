@@ -53,7 +53,7 @@ vm.activeNodes = ko.computed(function(){
     }
 
     return nodes;
-});
+}).extend({ logChange: 'activeNodes'});
 
 vm.showPrev = ko.computed(function(){
     return false;
@@ -71,14 +71,14 @@ vm.nextPage = function(){
 };
 
 vm.nodeClicked = function(node, closeSelf){
-    if(node.url){
+    if(node.isFolder()){
+        vm.selectedNode(node);
+    } else { 
         chrome.tabs.create({ url: node.url, active: closeSelf });
         // Add this back in to make it close itself.
         if(closeSelf){
             chrome.tabs.getCurrent(function(tab) {chrome.tabs.remove(tab.id); });
         }
-    } else { 
-        vm.selectedNode(node);
     }
 };
 
@@ -154,15 +154,56 @@ vm.hotkey = function(data, event){
     handleHotkey(event.keyCode, keyValue, event);
 };
 
+function isFolder(){
+    return !this.hasOwnProperty('url');
+}
+
+// This function is to add some properties to the bookmarknode object
+// for making processing easier
 function prepareBookmarkNodeRecursive(node, parent){
+    // Assign parent node into children
     if(parent !== null){
         node.parentNode = parent;
     }
 
+    node.isFolder = isFolder;
+
+    // Recursive tree visiter
     if(node.hasOwnProperty('children')){
+        // Sort folder children to top
+        node.children.sort(function(a, b){
+            var aIsFolder = a.hasOwnProperty('url');
+            var bIsFolder = b.hasOwnProperty('url');
+
+            if(aIsFolder && !bIsFolder){
+                return 1;
+            }
+            if(!aIsFolder && bIsFolder){
+                return -1;
+            }
+            return 0;
+        });
+
+        // Now mess with the kids
         ko.utils.arrayForEach(node.children, function(child) {
             prepareBookmarkNodeRecursive(child, node);
         });
+    }
+}
+
+vm.animateRemove = function(element){
+    $(element).remove(); 
+
+    // if (element.nodeType === 1) {
+    //     $(element).fadeOut(1000, function() { 
+    //         $(element).remove(); 
+    //     });
+    // }
+};
+
+vm.animateAdd = function(element){
+    if (element.nodeType === 1){ 
+        $(element).hide().fadeIn(300);
     }
 }
 

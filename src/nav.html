@@ -30,9 +30,9 @@
                     <span data-bind="text: breadcrumbText"></span>
                 </li>
             </ul>
-            <div class="node-parent" data-bind="foreach: activeNodes">
+            <div class="node-parent" data-bind="foreach: { data: activeNodes, afterAdd: animateAdd, beforeRemove: animateRemove }">
                 <div class="bookmark-node span3" 
-                    data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }, css: { folderNode : !$data.hasOwnProperty("url") }'>
+                    data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }, css: { folderNode : $data.isFolder() }'>
                     <span class='label label-inverse' data-bind='text: assignedHotkey'></span>
                     <p data-bind='text: title' />
                 </div>
