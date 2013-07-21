@@ -30,18 +30,36 @@
                     <span data-bind="text: breadcrumbText"></span>
                 </li>
             </ul>
-            <div class="node-parent" data-bind="foreach: { data: activeNodes, afterAdd: animateAdd, beforeRemove: animateRemove }">
-                <div class="bookmark-node span3" 
-                    data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }, css: { folderNode : $data.isFolder() }'>
-                    <span class='label label-inverse' data-bind='text: assignedHotkey'></span>
-                    <p data-bind='text: title' />
-                </div>
+            <div class="node-parent" data-bind="template: { foreach: activeNodes, name: function(item) { return item.isFolder() ? 'folder' : 'bookmark'; }, afterAdd: animateAdd, beforeRemove: animateRemove }">
             </div>
         </div>
         
+        <script type='text/html' id='folder'>
+            <div class="node folder-node span3" 
+                data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }'>
+                <div class='hotkey'>
+                    <span data-bind='text: assignedHotkey'></span>    
+                </div>
+                <div class="folder-shape">
+                    <span data-bind='text: title' />
+                </div>
+            </div>
+        </script>
+
+        <script type='text/html' id='bookmark'>
+            <div class="node bookmark-node span3" 
+                data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }'>
+                <p data-bind='text: title' />
+                <div class='hotkey'>
+                    <span data-bind='text: assignedHotkey'></span>    
+                </div>
+            </div>
+        </script>
+
         <!-- External script dependencies -->
         <script src='knockout-2.2.1.js' type='text/javascript'></script>
         <script src='jquery-1.10.1.min.js' type='text/javascript'></script>
         <script src='nav.js' type='text/javascript'></script>
+
     </body>
 </html>
