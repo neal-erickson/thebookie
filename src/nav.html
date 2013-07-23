@@ -35,23 +35,27 @@
         </div>
         
         <script type='text/html' id='folder'>
-            <div class="node folder-node span3" 
-                data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }'>
+            <div class="node folder-node span3" data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }'>
                 <div class='hotkey'>
                     <span data-bind='text: assignedHotkey'></span>    
                 </div>
-                <div class="folder-shape">
-                    <span data-bind='text: title' />
+                <div class='folder-node'>
+                    <div class="folder-shape-top">
+                    </div>
+                    <div class='folder-shape'>
+                        <span data-bind='text: title' />
+                    </div>    
                 </div>
             </div>
         </script>
 
         <script type='text/html' id='bookmark'>
-            <div class="node bookmark-node span3" 
-                data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }'>
-                <p data-bind='text: title' />
+            <div class="node span3" data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }'>
                 <div class='hotkey'>
                     <span data-bind='text: assignedHotkey'></span>    
+                </div>
+                <div class='bookmark-node'>
+                    <p data-bind='text: title' />
                 </div>
             </div>
         </script>
