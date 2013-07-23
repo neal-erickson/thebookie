@@ -52,7 +52,7 @@ vm.activeNodes = ko.computed(function(){
     }
 
     return nodes;
-}).extend({ logChange: 'activeNodes'});
+});//.extend({ logChange: 'activeNodes'});
 
 vm.showPrev = ko.computed(function(){
     return vm.activeNodeIndex() > 0;
@@ -66,6 +66,8 @@ vm.prevPage = function(){
     }
 };
 vm.nextPage = function(){
+    if(vm.childNodesLength() <= pageSize) return;
+
     vm.activeNodeIndex(vm.activeNodeIndex() + 1);
 
     // If we're too far, loop back around
@@ -185,9 +187,8 @@ function prepareBookmarkNodeRecursive(node, parent){
     if(node.hasOwnProperty('children')){
         // Sort folder children to top
         node.children.sort(function(a, b){
-            var aIsFolder = a.hasOwnProperty('url');
-            var bIsFolder = b.hasOwnProperty('url');
-
+            var aIsFolder = !$.proxy(isFolder, a)();
+            var bIsFolder = !$.proxy(isFolder, b)();
             if(aIsFolder && !bIsFolder){
                 return 1;
             }
@@ -204,6 +205,8 @@ function prepareBookmarkNodeRecursive(node, parent){
     }
 }
 
+// This function gets called for each element being removed
+// from the observable array of bookmarktreenodes
 vm.animateRemove = function(element){
     $(element).remove(); 
 
@@ -214,6 +217,7 @@ vm.animateRemove = function(element){
     // }
 };
 
+// And this one for each adding
 vm.animateAdd = function(element){
     if (element.nodeType === 1){ 
         $(element).hide().fadeIn(300);
@@ -225,6 +229,7 @@ chrome.bookmarks.getTree(function(tree){
     var rootNode = tree[0].children[0]; // this is the 'bookmarks bar'
     rootNode.parentId = null;
 
+    // Manipulate the nodes a bit for convenience
     prepareBookmarkNodeRecursive(rootNode, null);
 
     vm.tree(rootNode);

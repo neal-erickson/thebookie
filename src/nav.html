@@ -7,8 +7,8 @@
     </head>
     <body data-bind='event: { keyup: hotkey }'>
         <div class='container node-container row'>
-            <h2 class="title">thebookie v0.1</h2>
-            <button class="btn btn-large btn-info arrow-button" style="left: -100px;"
+            <h2 class="title">thebookie</h2>
+            <button class="btn btn-large btn-info arrow-button" style="left: -120px;"
                 data-bind="visible: showPrev, click: prevPage">
                 <i class="icon-arrow-left icon-white"></i>
                 Prev
@@ -36,10 +36,11 @@
         
         <script type='text/html' id='folder'>
             <div class="node folder-node span3" data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }'>
-                <div class='hotkey'>
-                    <span data-bind='text: assignedHotkey'></span>    
-                </div>
+                
                 <div class='folder-node'>
+                    <div class='hotkey'>
+                        <span data-bind='text: assignedHotkey'></span>    
+                    </div>
                     <div class="folder-shape-top">
                     </div>
                     <div class='folder-shape'>
@@ -51,10 +52,10 @@
 
         <script type='text/html' id='bookmark'>
             <div class="node span3" data-bind='click: function(data, event){ $parent.nodeClicked(data, true); }'>
-                <div class='hotkey'>
-                    <span data-bind='text: assignedHotkey'></span>    
-                </div>
                 <div class='bookmark-node'>
+                    <div class='hotkey'>
+                        <span data-bind='text: assignedHotkey'></span>    
+                    </div>
                     <p data-bind='text: title'></p>
                     <img class='favicon' alt='favicon' data-bind='attr: { src: faviconUrl() }'></img>
                 </div>
