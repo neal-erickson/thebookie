@@ -1,5 +1,5 @@
 div.node-container {
-	width: 1064px;
+	width: 960px;
 	position: relative;
 }
 
@@ -74,6 +74,9 @@ h2.title {
 	border-radius:0px 8px 8px 8px;
 	z-index: 900;
 	padding: 10px;
+	font-size: 22px;
+	color: #505050;
+	font-variant: small-caps;
 }
 
 .folder-shape-top {
@@ -86,4 +89,12 @@ h2.title {
     position: absolute;
     top: 0px;
     z-index: 1000;
+}
+
+img.favicon {
+	position: absolute;
+	height: 20px;
+	width: 20px;
+	left: 10px;
+	bottom: 10px;
 }

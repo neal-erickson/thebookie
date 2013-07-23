@@ -42,13 +42,12 @@ vm.endIndex = ko.computed(function(){
 vm.activeNodes = ko.computed(function(){
     var page = vm.activeNodeIndex();
     var nodes = vm.childNodes();
-    
     var start = vm.startIndex(), end = vm.endIndex();
 
     nodes = nodes.slice(start, end);
 
     // assign hotkeys
-     for(var index in nodes){
+    for(var index in nodes){
         nodes[index].assignedHotkey = alphaHotkeys[index];
     }
 
@@ -56,11 +55,16 @@ vm.activeNodes = ko.computed(function(){
 }).extend({ logChange: 'activeNodes'});
 
 vm.showPrev = ko.computed(function(){
-    return false;
+    return vm.activeNodeIndex() > 0;
 });
 vm.showNext = ko.computed(function(){
     return vm.childNodes().length > pageSize;
 });
+vm.prevPage = function(){
+    if(vm.activeNodeIndex() > 0){
+        vm.activeNodeIndex(vm.activeNodeIndex() - 1);
+    }
+};
 vm.nextPage = function(){
     vm.activeNodeIndex(vm.activeNodeIndex() + 1);
 
@@ -142,7 +146,10 @@ function handleHotkey(keyCode, keyValue, keyEvent){
         case 32: // spacebar
             vm.nextPage();
             break;
-        case 192: case 27: // esc and tilde
+        case 8: case 46: // backspace + delete
+            vm.prevPage();
+            break;
+        case 192: case 27: // esc + tilde
             goUpHierarchy();
             break;
     }
@@ -158,6 +165,11 @@ function isFolder(){
     return !this.hasOwnProperty('url');
 }
 
+function faviconUrl(){
+    if(this.isFolder()) return '';
+    return "chrome://favicon/" + this.url;
+}
+
 // This function is to add some properties to the bookmarknode object
 // for making processing easier
 function prepareBookmarkNodeRecursive(node, parent){
@@ -167,6 +179,7 @@ function prepareBookmarkNodeRecursive(node, parent){
     }
 
     node.isFolder = isFolder;
+    node.faviconUrl = faviconUrl;
 
     // Recursive tree visiter
     if(node.hasOwnProperty('children')){

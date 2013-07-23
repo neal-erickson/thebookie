@@ -9,11 +9,11 @@
         <div class='container node-container row'>
             <h2 class="title">thebookie v0.1</h2>
             <button class="btn btn-large btn-info arrow-button" style="left: -100px;"
-                data-bind="visible: showPrev">
+                data-bind="visible: showPrev, click: prevPage">
                 <i class="icon-arrow-left icon-white"></i>
                 Prev
             </button>
-            <button class="btn btn-large btn-info arrow-button" style="left: 1085px;"
+            <button class="btn btn-large btn-info arrow-button" style="right: -140px;"
                 data-bind="visible: showNext, click: nextPage">
                 Next
                 <i class="icon-arrow-right icon-white"></i>
@@ -44,7 +44,7 @@
                     </div>
                     <div class='folder-shape'>
                         <span data-bind='text: title' />
-                    </div>    
+                    </div>
                 </div>
             </div>
         </script>
@@ -55,7 +55,8 @@
                     <span data-bind='text: assignedHotkey'></span>    
                 </div>
                 <div class='bookmark-node'>
-                    <p data-bind='text: title' />
+                    <p data-bind='text: title'></p>
+                    <img class='favicon' alt='favicon' data-bind='attr: { src: faviconUrl() }'></img>
                 </div>
             </div>
         </script>
