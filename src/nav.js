@@ -1,3 +1,5 @@
+console = chrome.extension.getBackgroundPage().console;
+
 ko.extenders.logChange = function(target, option) {
     target.subscribe(function(newValue) {
        console.log(option + ": " + newValue);
@@ -14,12 +16,13 @@ var pageSize = 12;
 var vm = { };
 vm.tree = ko.observable(null);
 vm.rootNode = ko.observable(null);
-vm.selectedNode = ko.observable();
+vm.recentNode = ko.observable(null);
+vm.selectedNode = ko.observable().extend({ logChange: 'selectedNode' });
 
 vm.childNodes = ko.computed(function(){
     if(!vm.selectedNode()) return [];
     return vm.selectedNode().children;
-});
+}).extend({ logChange: 'childNodes' });
 vm.childNodesLength = ko.computed(function(){
     return vm.childNodes().length;
 });
@@ -52,7 +55,7 @@ vm.activeNodes = ko.computed(function(){
     }
 
     return nodes;
-});//.extend({ logChange: 'activeNodes'});
+}).extend({ logChange: 'activeNodes'});
 
 vm.showPrev = ko.computed(function(){
     return vm.activeNodeIndex() > 0;
@@ -151,10 +154,17 @@ function handleHotkey(keyCode, keyValue, keyEvent){
         case 8: case 46: // backspace + delete
             vm.prevPage();
             break;
-        case 192: case 27: // esc + tilde
+        case 27: // esc + tilde
             goUpHierarchy();
             break;
+        case 192:
+            viewRecentlyAdded();
+            break;
     }
+}
+
+function viewRecentlyAdded(){
+    vm.selectedNode(vm.recentNode());
 }
 
 vm.hotkey = function(data, event){
@@ -209,7 +219,6 @@ function prepareBookmarkNodeRecursive(node, parent){
 // from the observable array of bookmarktreenodes
 vm.animateRemove = function(element){
     $(element).remove(); 
-
     // if (element.nodeType === 1) {
     //     $(element).fadeOut(1000, function() { 
     //         $(element).remove(); 
@@ -235,6 +244,18 @@ chrome.bookmarks.getTree(function(tree){
     vm.tree(rootNode);
     vm.rootNode(rootNode);
     vm.selectedNode(rootNode);
+
+    // This is awkward for it to be sitting here, move later
+    chrome.bookmarks.getRecent(60, function(recentItems){
+        var fauxNode = {
+            isFolder: function() { return false; },
+            children: recentItems,
+            title: '(Recently added)',
+            parentNode: vm.rootNode()
+        };
+        prepareBookmarkNodeRecursive(fauxNode, null);
+        vm.recentNode(fauxNode);
+    });
 });
 
 // This is the non-jquery way to be ready for something
