@@ -1,0 +1,30 @@
+{
+  // Manifest docs: https://developer.chrome.com/extensions/manifest
+  "manifest_version": 2,
+
+  "name": "The Bookie",
+  "description": "Epic-ly awesome bookmark navigation",
+  "version": "0.0.2",
+
+  "permissions": [
+    "tabs",
+    "bookmarks",
+    "<all_urls>"
+  ],
+
+  "browser_action": {
+    "default_icon": "src/icon.png"
+  },
+  
+  // https://developer.chrome.com/extensions/contentSecurityPolicy
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com; object-src 'self'",
+
+  "background": {
+    "scripts": ["src/background.js"],
+    "persistent": false
+  },
+
+  "icons": {
+    "16": "src/icon.png"
+  }
+}
