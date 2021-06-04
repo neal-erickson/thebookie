@@ -1,5 +1,10 @@
-console = chrome.extension.getBackgroundPage().console;
+//console = chrome.extension.getBackgroundPage().console;
 
+var console = {
+  log: function (msg) {
+    // nothing for now...
+  }
+}
 ko.extenders.logChange = function(target, option) {
     target.subscribe(function(newValue) {
        console.log(option + ": " + newValue);
@@ -82,7 +87,7 @@ vm.nextPage = function(){
 vm.nodeClicked = function(node, closeSelf){
     if(node.isFolder()){
         vm.selectedNode(node);
-    } else { 
+    } else {
         chrome.tabs.create({ url: node.url, active: closeSelf });
         // Add this back in to make it close itself.
         if(closeSelf){
@@ -100,7 +105,7 @@ vm.breadcrumbs = ko.computed(function(){
 
     var node = vm.selectedNode();
     var crumbs = [];
-   
+
     // Add 'dead' crumb for current
     crumbs.push({
         data: null,
@@ -218,17 +223,17 @@ function prepareBookmarkNodeRecursive(node, parent){
 // This function gets called for each element being removed
 // from the observable array of bookmarktreenodes
 vm.animateRemove = function(element){
-    $(element).remove(); 
+    $(element).remove();
     // if (element.nodeType === 1) {
-    //     $(element).fadeOut(1000, function() { 
-    //         $(element).remove(); 
+    //     $(element).fadeOut(1000, function() {
+    //         $(element).remove();
     //     });
     // }
 };
 
 // And this one for each adding
 vm.animateAdd = function(element){
-    if (element.nodeType === 1){ 
+    if (element.nodeType === 1){
         $(element).hide().fadeIn(300);
     }
 }
