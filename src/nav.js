@@ -1,16 +1,30 @@
+// This doesn't work in the new version
 //console = chrome.extension.getBackgroundPage().console;
 
+// Crappy backfill...
+/*
 var console = {
   log: function (msg) {
     // nothing for now...
   }
 }
+*/
+
+// https://brianmhunt.github.io/post/2014-02-13-knockout-catching-errors/
+
 ko.extenders.logChange = function(target, option) {
     target.subscribe(function(newValue) {
        console.log(option + ": " + newValue);
     });
     return target;
 };
+
+window.addEventListener("message", (event) => {
+  //if (event.origin !== "http://example.org:8080")
+  //  return;
+
+  console.log("message received", event);
+}, false);
 
 // Current hotkey plan is 12 keys, 3 rows of 4
 var alphaHotkeys = ['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V'];
@@ -251,6 +265,7 @@ chrome.bookmarks.getTree(function(tree){
     vm.selectedNode(rootNode);
 
     // This is awkward for it to be sitting here, move later
+    /*
     chrome.bookmarks.getRecent(60, function(recentItems){
         var fauxNode = {
             isFolder: function() { return false; },
@@ -261,6 +276,7 @@ chrome.bookmarks.getTree(function(tree){
         prepareBookmarkNodeRecursive(fauxNode, null);
         vm.recentNode(fauxNode);
     });
+    */
 });
 
 // This is the non-jquery way to be ready for something
