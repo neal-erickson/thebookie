@@ -8,11 +8,11 @@
     <body data-bind='event: { keyup: hotkey }'>
         <div class='container node-container row'>
             <h2 class="title">thebookie</h2>
-            <!--<button class="btn btn-large btn-info arrow-button" style="left: -120px;"
+            <button class="btn btn-large btn-info arrow-button" style="left: -120px;"
                 data-bind="visible: showPrev, click: prevPage">
                 <i class="icon-arrow-left icon-white"></i>
                 Prev
-            </button>-->
+            </button>
             <button class="btn btn-large btn-info arrow-button" style="right: -140px;"
                 data-bind="visible: showNext, click: nextPage">
                 Next
@@ -21,8 +21,8 @@
             <ul class="breadcrumb">
                 <!-- ko foreach: breadcrumbs -->
                 <li>
-                    <!--<span data-bind='visible: data == null, text: name'></span>-->
-                    <!--<a href="#" data-bind='text: name, click: clickFunction, visible: data !== null'></a>-->
+                    <span data-bind='visible: data == null, text: name'></span>
+                    <a href="#" data-bind='text: name, click: clickFunction, visible: data !== null'></a>
                     <span class="divider">/</span>
                 </li>
                 <!-- /ko -->
@@ -57,7 +57,8 @@
                         <span data-bind='text: assignedHotkey'></span>
                     </div>
                     <p data-bind='text: title'></p>
-                    <img class='favicon' alt='favicon' data-bind='attr: { src: faviconUrl() }'></img>
+                    <!--External resources can't be loaded in a sandbox-->
+                    <!--<img class='favicon' alt='favicon' data-bind='attr: { src: faviconUrl() }'></img>-->
                 </div>
             </div>
         </script>
@@ -65,7 +66,6 @@
         <!-- External script dependencies -->
         <!--https://github.com/knockout/knockout/blob/212376a484f64d32cf49a6aaa4d5eee85aa7653a/dist/knockout.debug.js-->
         <script src='third_party/knockout-3.4.0.debug.js' type='text/javascript'></script>
-        <!--<script src='third_party/ko.build.reference.min-4.0.0-alpha8.js' type='text/javascript'></script>-->
         <script src='third_party/jquery-1.10.1.min.js' type='text/javascript'></script>
         <script src='nav.js' type='text/javascript'></script>
 

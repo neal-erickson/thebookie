@@ -19,13 +19,6 @@ ko.extenders.logChange = function(target, option) {
     return target;
 };
 
-window.addEventListener("message", (event) => {
-  //if (event.origin !== "http://example.org:8080")
-  //  return;
-
-  console.log("message received", event);
-}, false);
-
 // Current hotkey plan is 12 keys, 3 rows of 4
 var alphaHotkeys = ['Q', 'W', 'E', 'R', 'A', 'S', 'D', 'F', 'Z', 'X', 'C', 'V'];
 
@@ -102,11 +95,18 @@ vm.nodeClicked = function(node, closeSelf){
     if(node.isFolder()){
         vm.selectedNode(node);
     } else {
-        chrome.tabs.create({ url: node.url, active: closeSelf });
-        // Add this back in to make it close itself.
-        if(closeSelf){
-            chrome.tabs.getCurrent(function(tab) {chrome.tabs.remove(tab.id); });
+      window.top.postMessage({
+        command: 'create-tab',
+        context: {
+          url: node.url
         }
+      }, '*');
+      // Add this back in to make it close itself.
+      /*
+      if(closeSelf){
+          chrome.tabs.getCurrent(function(tab) {chrome.tabs.remove(tab.id); });
+      }
+      */
     }
 };
 
@@ -252,34 +252,46 @@ vm.animateAdd = function(element){
     }
 }
 
-// Load the data from chrome.bookmarks
-chrome.bookmarks.getTree(function(tree){
-    var rootNode = tree[0].children[0]; // this is the 'bookmarks bar'
-    rootNode.parentId = null;
+function loadBookmarkTree(data) {
+  var rootNode = data[0].children[0]; // this is the 'bookmarks bar'
+  rootNode.parentId = null;
 
-    // Manipulate the nodes a bit for convenience
-    prepareBookmarkNodeRecursive(rootNode, null);
+  // Manipulate the nodes a bit for convenience
+  prepareBookmarkNodeRecursive(rootNode, null);
 
-    vm.tree(rootNode);
-    vm.rootNode(rootNode);
-    vm.selectedNode(rootNode);
+  vm.tree(rootNode);
+  vm.rootNode(rootNode);
+  vm.selectedNode(rootNode);
 
-    // This is awkward for it to be sitting here, move later
-    /*
-    chrome.bookmarks.getRecent(60, function(recentItems){
-        var fauxNode = {
-            isFolder: function() { return false; },
-            children: recentItems,
-            title: '(Recently added)',
-            parentNode: vm.rootNode()
-        };
-        prepareBookmarkNodeRecursive(fauxNode, null);
-        vm.recentNode(fauxNode);
-    });
-    */
-});
+  // This is awkward for it to be sitting here, move later
+  /*
+  chrome.bookmarks.getRecent(60, function(recentItems){
+      var fauxNode = {
+          isFolder: function() { return false; },
+          children: recentItems,
+          title: '(Recently added)',
+          parentNode: vm.rootNode()
+      };
+      prepareBookmarkNodeRecursive(fauxNode, null);
+      vm.recentNode(fauxNode);
+  });
+  */
+}
 
 // This is the non-jquery way to be ready for something
 document.addEventListener('DOMContentLoaded', function () {
+  // Kick off knockout!
   ko.applyBindings(vm);
+
+  // Get ready to accept bookmarks data from parent
+  window.addEventListener("message", (event) => {
+    console.log("nav message received", event)
+    loadBookmarkTree(event.data.context);
+  }, false);
+
+  // Send postmessage: this window ready for content (now that the accept bookmarks event listener is ready)
+  window.top.postMessage({
+    command: 'nav-window-ready',
+    context: {}
+  }, '*');
 });
