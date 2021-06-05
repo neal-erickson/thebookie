@@ -1,4 +1,16 @@
-console = chrome.extension.getBackgroundPage().console;
+// This doesn't work in the new version
+//console = chrome.extension.getBackgroundPage().console;
+
+// Crappy backfill...
+/*
+var console = {
+  log: function (msg) {
+    // nothing for now...
+  }
+}
+*/
+
+// https://brianmhunt.github.io/post/2014-02-13-knockout-catching-errors/
 
 ko.extenders.logChange = function(target, option) {
     target.subscribe(function(newValue) {
@@ -82,12 +94,19 @@ vm.nextPage = function(){
 vm.nodeClicked = function(node, closeSelf){
     if(node.isFolder()){
         vm.selectedNode(node);
-    } else { 
-        chrome.tabs.create({ url: node.url, active: closeSelf });
-        // Add this back in to make it close itself.
-        if(closeSelf){
-            chrome.tabs.getCurrent(function(tab) {chrome.tabs.remove(tab.id); });
+    } else {
+      window.top.postMessage({
+        command: 'create-tab',
+        context: {
+          url: node.url
         }
+      }, '*');
+      // Add this back in to make it close itself.
+      /*
+      if(closeSelf){
+          chrome.tabs.getCurrent(function(tab) {chrome.tabs.remove(tab.id); });
+      }
+      */
     }
 };
 
@@ -100,7 +119,7 @@ vm.breadcrumbs = ko.computed(function(){
 
     var node = vm.selectedNode();
     var crumbs = [];
-   
+
     // Add 'dead' crumb for current
     crumbs.push({
         data: null,
@@ -218,47 +237,61 @@ function prepareBookmarkNodeRecursive(node, parent){
 // This function gets called for each element being removed
 // from the observable array of bookmarktreenodes
 vm.animateRemove = function(element){
-    $(element).remove(); 
+    $(element).remove();
     // if (element.nodeType === 1) {
-    //     $(element).fadeOut(1000, function() { 
-    //         $(element).remove(); 
+    //     $(element).fadeOut(1000, function() {
+    //         $(element).remove();
     //     });
     // }
 };
 
 // And this one for each adding
 vm.animateAdd = function(element){
-    if (element.nodeType === 1){ 
+    if (element.nodeType === 1){
         $(element).hide().fadeIn(300);
     }
 }
 
-// Load the data from chrome.bookmarks
-chrome.bookmarks.getTree(function(tree){
-    var rootNode = tree[0].children[0]; // this is the 'bookmarks bar'
-    rootNode.parentId = null;
+function loadBookmarkTree(data) {
+  var rootNode = data[0].children[0]; // this is the 'bookmarks bar'
+  rootNode.parentId = null;
 
-    // Manipulate the nodes a bit for convenience
-    prepareBookmarkNodeRecursive(rootNode, null);
+  // Manipulate the nodes a bit for convenience
+  prepareBookmarkNodeRecursive(rootNode, null);
 
-    vm.tree(rootNode);
-    vm.rootNode(rootNode);
-    vm.selectedNode(rootNode);
+  vm.tree(rootNode);
+  vm.rootNode(rootNode);
+  vm.selectedNode(rootNode);
 
-    // This is awkward for it to be sitting here, move later
-    chrome.bookmarks.getRecent(60, function(recentItems){
-        var fauxNode = {
-            isFolder: function() { return false; },
-            children: recentItems,
-            title: '(Recently added)',
-            parentNode: vm.rootNode()
-        };
-        prepareBookmarkNodeRecursive(fauxNode, null);
-        vm.recentNode(fauxNode);
-    });
-});
+  // This is awkward for it to be sitting here, move later
+  /*
+  chrome.bookmarks.getRecent(60, function(recentItems){
+      var fauxNode = {
+          isFolder: function() { return false; },
+          children: recentItems,
+          title: '(Recently added)',
+          parentNode: vm.rootNode()
+      };
+      prepareBookmarkNodeRecursive(fauxNode, null);
+      vm.recentNode(fauxNode);
+  });
+  */
+}
 
 // This is the non-jquery way to be ready for something
 document.addEventListener('DOMContentLoaded', function () {
+  // Kick off knockout!
   ko.applyBindings(vm);
+
+  // Get ready to accept bookmarks data from parent
+  window.addEventListener("message", (event) => {
+    console.log("nav message received", event)
+    loadBookmarkTree(event.data.context);
+  }, false);
+
+  // Send postmessage: this window ready for content (now that the accept bookmarks event listener is ready)
+  window.top.postMessage({
+    command: 'nav-window-ready',
+    context: {}
+  }, '*');
 });
