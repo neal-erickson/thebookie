@@ -294,4 +294,28 @@ document.addEventListener('DOMContentLoaded', function () {
     command: 'nav-window-ready',
     context: {}
   }, '*');
+
+  // Send out resizing messages to parent Iframe
+  // https://developer.mozilla.org/en-US/docs/Web/API/Resize_Observer_API
+  var ro = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      const cr = entry.contentRect;
+      console.log('Element:', entry.target);
+      console.log(`Element size: ${cr.width}px x ${cr.height}px`);
+      console.log(`Element padding: ${cr.top}px ; ${cr.left}px`);
+
+      window.top.postMessage({
+        command: 'nav-window-resized',
+        context: {
+          width: cr.width,
+          height: cr.height
+        }
+      }, '*');
+    }
+  });
+
+  // Observe one or multiple elements
+  ro.observe(document.getElementById("nav-root"));
+
+  window.focus(); // set focus so that shortcut keys work immediately.
 });

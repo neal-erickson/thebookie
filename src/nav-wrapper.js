@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
       case 'create-tab':
         chrome.tabs.create({ url: event.data.context.url, active: true });
         break;
+      case 'nav-window-resized':
+        //alert("window resize", event.data.context.width, event.data.context.height)
+        console.log('nav wrapper resizing', event.data.context);
+        iframe.style.height = (event.data.context.height + 84) + "px";
+        break;
       default:
         console.error('unrecognized message', event);
         break;
